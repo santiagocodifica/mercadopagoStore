@@ -7,7 +7,7 @@ import Login from "./pages/Login"
 import Home from './pages/Home'
 import PrepareOrder from './pages/PrepareOrder'
 import User from "./pages/User"
-import { Order, Orders } from './features/admin'
+import { Order, Orders } from './features/cms/orders'
 
 import { useAuthContext } from './features/auth'
 import Product from './pages/Product'

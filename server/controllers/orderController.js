@@ -47,8 +47,11 @@ const create_order = async (req, res) => {
           user.orders.push(order._id)
           user.checkout = {}
           const save = user.save()
-          if(save){ res.status(200).json(order) }
-          else{ res.status(400).json({ error: "There was a problem processing your order, please contact us" }) }
+          if(save){
+            res.status(200).json(order)
+          }else{
+            res.status(400).json({ error: "There was a problem processing your order, please contact us" })
+          }
         })
         .catch(error => {
           console.log(error)

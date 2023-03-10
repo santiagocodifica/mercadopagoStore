@@ -8,9 +8,7 @@ const CartModal = () => {
   const { cart } = useCartContext()
 
   return(
-    <div
-      className={`fixed top-0 ${cartModal.isOpen ? "z-20" : "-z-10"} w-full h-screen text-white`}
-    >
+    <div className={`fixed top-0 ${cartModal.isOpen ? "z-20" : "-z-10"} w-full h-screen text-white`}>
       <div
         className="absolute top-0 w-full h-full"
         onClick={() => dispatch({ type: "CLOSE", payload: { modal: "cartModal" } })}
