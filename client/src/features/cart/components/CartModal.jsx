@@ -2,7 +2,6 @@ import { useModalsContext } from "@/features/modals"
 import { useCartContext } from "../hooks/useCartContext"
 import Cart from "./Cart"
 
-// Possible Cart Component
 const CartModal = () => {
 
   const { dispatch, cartModal } = useModalsContext()
