@@ -31,8 +31,51 @@ const getOneProduct = async (req, res) => {
     })
 }
 
+const create_product = async (req, res) => {
+  const { product } = req.body
+
+  Product.create({ ...product })
+    .then(product => res.status(200).json(product))
+    .catch(error => {
+      console.log(error)
+      res.status(400).json({ error: error.message })
+    })
+}
+
+const update_product = async (req, res) => {
+  const { id } = req.params
+  const { product } = req.body
+  
+  Product.findOneAndUpdate({ _id: id }, {
+    name: product.name,
+    price: product.price,
+    description: product.description,
+    category: product.category,
+    sizes: product.sizes
+  })
+    .then(product => { res.status(200).json(product) })
+    .catch(error => {
+      console.log(error)
+      res.status(400).json({ error: error.message })
+    })
+}
+
+const delete_product = async (req, res) => {
+  const { id } = req.params
+
+  Product.findOneAndDelete({ _id: id })
+    .then(product => res.status(200).json(product))
+    .catch(error => {
+      console.log(error)
+      res.status(400).json({ error: error.message })
+    })
+}
+
 module.exports = {
   getAllProducts,
   getProductsById,
-  getOneProduct
+  getOneProduct,
+  create_product,
+  update_product,
+  delete_product
 }
