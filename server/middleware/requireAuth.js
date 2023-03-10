@@ -9,7 +9,7 @@ const requireAuth = async (req, res, next) => {
 
   try{
     const { _id } = jwt.verify(token, process.env.SECRET)
-    req.user = await User.findOne({ _id }).select("_id")
+    req.user = await User.findOne({ _id })
     next()
   }catch(error){
     console.log(error)
@@ -17,4 +17,4 @@ const requireAuth = async (req, res, next) => {
   }
 }
 
-module.exports = { requireAuth }
+module.exports = requireAuth 

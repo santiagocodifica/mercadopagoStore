@@ -4,28 +4,41 @@ const validator = require("validator")
 
 const Schema = mongoose.Schema
 
+const shipping_location_schema = new Schema({
+  name: { type: String },
+  address: { type: String },
+  department: { type: String },
+  city: { type: String },
+  postal_code: { type: String },
+  comment: { type: String },
+  country: { type: String }
+})
+
+const cart_schema = new Schema({
+  product_id: { type: String },
+  size: { type: String },
+  quantity: { type: Number },
+})
+
+const checkout_schema = new Schema({
+  cart: [cart_schema],
+  shipping: shipping_location_schema
+})
+
 const userSchema = new Schema({
-  username: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  }
+  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  admin: { type: Boolean, required: true, default: false },
+  password: { type: String, required: true },
+  shipping_locations: [shipping_location_schema],
+  checkout: checkout_schema,
+  orders: { type: Array, of: String }
 })
 
 userSchema.statics.signup = async function(username, email, password){
   if(!email || !password || !username){ throw Error("All fields must be filled") }
   if(!validator.isEmail(email)){ throw Error("Email not valid") }
   if(!validator.isStrongPassword(password)){ throw Error("Password not strong enough") }
-
-  console.log("enters static signup")
 
   const exists = await this.findOne({ email })
   if(exists){ throw Error("Email already in use") }
@@ -41,7 +54,6 @@ userSchema.statics.signup = async function(username, email, password){
 userSchema.statics.login = async function(email, password){
   if(!email || !password){ throw Error("All fields must be filled") }
 
-  console.log("enters static login")
   const user = await this.findOne({ email })
   if(!user){ throw Error("Incorrect Email") }
 

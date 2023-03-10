@@ -8,4 +8,7 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  safelist: [
+    "border-red-400"
+  ]
 }
