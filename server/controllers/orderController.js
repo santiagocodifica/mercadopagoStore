@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const Order = require("../models/orderModel")
 const User = require("../models/userModel")
+const Product = require("../models/productModel")
 
 const get_orders = (_req, res) => {
   Order.find({}).sort({ createdAt: -1 })
@@ -42,13 +43,29 @@ const create_order = async (req, res) => {
   })
     .then(order => {
       User.findById(req.user._id)
-        .then(user => {
+        .then(async user => {
           console.log("finds user: ", user)
           user.orders.push(order._id)
           user.checkout = {}
           const save = user.save()
           if(save){
-            res.status(200).json(order)
+            await Promise.all(order.products.map(ordered_product => {
+              Product.findById(ordered_product._id)
+                .then(product => {
+                  const updatedSizes = product.sizes.map(item => {
+                    if(item.size === ordered_product.size){
+                      return { _id: mongoose.Types.ObjectId(item.id), size: item.size, stock: Number(item.stock) - Number(ordered_product.quantity) }
+                    }else{
+                      return item
+                    }
+                  })
+                  console.log(updatedSizes)
+                  product.sizes = updatedSizes 
+                  const save = product.save()
+                  if(!save){ res.status(400).json({ error: "Could not update product stock"})}
+                })
+            }))
+            .then(() => res.status(200).json(order))
           }else{
             res.status(400).json({ error: "There was a problem processing your order, please contact us" })
           }
