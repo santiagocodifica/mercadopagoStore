@@ -7,11 +7,10 @@ import Login from "./pages/Login"
 import Home from './pages/Home'
 import PrepareOrder from './pages/PrepareOrder'
 import User from "./pages/User"
-import { Order, Orders } from './features/cms/orders'
-
 import { useAuthContext } from './features/auth'
 import Product from './pages/Product'
 import { CartModal } from './features/cart'
+import Admin from './Admin'
 
 function App() {
 
@@ -29,13 +28,11 @@ function App() {
           <Route path="pre-checkout" element={ user ? <PrepareOrder /> : <Login />} />
           <Route path="user" element={ user ? <User /> : <Login />} />
         </Route>
-        <Route path="admin">
-          <Route path="orders" element={ user && user.admin ? <Orders /> : <Login /> } />
-          <Route path="orders/:id" element={ user && user.admin ? <Order /> : <Login /> } />
-        </Route>
+        <Route path="admin/*" element={<Admin />} />
       </Routes>
     </div>
   )
 }
+
 
 export default App

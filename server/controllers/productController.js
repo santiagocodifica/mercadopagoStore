@@ -45,6 +45,8 @@ const create_product = async (req, res) => {
 const update_product = async (req, res) => {
   const { id } = req.params
   const { product } = req.body
+
+  console.log(id)
   
   Product.findOneAndUpdate({ _id: id }, {
     name: product.name,
