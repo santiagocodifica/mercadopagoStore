@@ -38,7 +38,7 @@ export const useProcessPayment = () => {
     .then(response => response.json())
     .then(() => {
       dispatch({ type: "CLEAR" })
-      navigate("/")
+      navigate("/success")
     })
     .catch(error => console.log(error))
   }

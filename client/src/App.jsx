@@ -11,6 +11,7 @@ import { useAuthContext } from './features/auth'
 import Product from './pages/Product'
 import { CartModal } from './features/cart'
 import Admin from './Admin'
+import Success from './pages/Success'
 
 function App() {
 
@@ -22,11 +23,12 @@ function App() {
         <Route path="" element={ <> <Navbar /><CartModal /><Outlet /> </> }>
           <Route path="" element={ <Home /> } />
           <Route path="product/:id" element={ <Product /> } />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="signup" element={<Signup />} />
-          <Route path="login" element={<Login />} />
-          <Route path="pre-checkout" element={ user ? <PrepareOrder /> : <Login />} />
-          <Route path="user" element={ user ? <User /> : <Login />} />
+          <Route path="checkout" element={<Checkout /> } />
+          <Route path="signup" element={<Signup /> } />
+          <Route path="login" element={<Login /> } />
+          <Route path="pre-checkout" element={ user ? <PrepareOrder /> : <Login /> } />
+          <Route path="user" element={ user ? <User /> : <Login /> } />
+          <Route path="success" element={ user? <Success /> : <Login /> } />
         </Route>
         <Route path="admin/*" element={<Admin />} />
       </Routes>
