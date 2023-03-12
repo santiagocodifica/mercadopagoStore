@@ -1,4 +1,5 @@
 const User =  require("../models/userModel")
+const Order = require("../models/orderModel")
 const Product = require("../models/productModel")
 const jwt = require("jsonwebtoken")
 
@@ -127,4 +128,22 @@ const getPaymentData = async (req, res) => {
   }
 }
 
-module.exports = { loginUser, signupUser, createShippingLocation, getLocations, deleteLocation, createPayment, getPaymentData }
+const get_user_orders = async (req, res) => {
+  const { id } = req.params
+
+  try{
+    const user = await User.findById(id)
+    try{
+      const orders = await Order.find({ "_id": { $in: user.orders }}).sort({ createdAt: -1 })
+      res.status(200).json(orders)
+    }catch(error){
+      console.log(error)
+      res.status(400).json({ error: error.message })
+    }
+  }catch(error){
+    console.log(error)
+    res.status(400).json({ error: error.message })
+  }
+}
+
+module.exports = { loginUser, signupUser, createShippingLocation, getLocations, deleteLocation, createPayment, getPaymentData, get_user_orders }

@@ -5,3 +5,4 @@ export { AddLocationForm, AddLocationModal }
 
 //hooks
 export { useUserLocations } from "./hooks/useUserLocations"
+export { useGetUserOrders } from "./api/getUserOrders"

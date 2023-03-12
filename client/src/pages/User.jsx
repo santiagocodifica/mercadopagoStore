@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { AddLocationModal, useUserLocations } from "@/features/users"
+import { AddLocationModal, useGetUserOrders, useUserLocations } from "@/features/users"
 import { useAuthContext } from "@/features/auth"
 
 const User = () => {
@@ -7,6 +7,7 @@ const User = () => {
   const { user } = useAuthContext()
   const { userLocations, addLocation, deleteLocation } = useUserLocations()
   const [ isVisible, setIsVisible ] = useState(false)
+  const { userOrders } = useGetUserOrders()
 
   return( user &&
     <div className="p-4 mt-10">
@@ -26,10 +27,27 @@ const User = () => {
               </li>
             })}
           </ul>
+          <button onClick={() => setIsVisible(true)}>Añadir dirección</button>
+          { isVisible && <AddLocationModal addLocation={addLocation} isVisible={isVisible} setIsVisible={setIsVisible} />}
         </div> 
       }
-      <button onClick={() => setIsVisible(true)}>Añadir dirección</button>
-      { isVisible && <AddLocationModal addLocation={addLocation} isVisible={isVisible} setIsVisible={setIsVisible} />}
+      { userOrders &&
+        <div>
+          <h1>Pedidos:</h1>
+          <ul>
+            { userOrders.map(order => { return(
+              <li key={order._id} className="py-2 border-b">
+                <span>Estado: { order.status }</span>
+                <div>
+                  { order.products.map((product, index) => { return(
+                    <p key={index}>{ product.quantity } { product.name } Talle: { product.size }</p>
+                  )})}
+                </div>
+              </li>
+            )})}
+          </ul>
+        </div>
+      }      
     </div>
   )
 }
