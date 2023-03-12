@@ -8,8 +8,8 @@ export const useProcessPayment = () => {
   const { dispatch } = useCartContext()
   const navigate = useNavigate()
   
-  const processPayment = async (checkout, cardForm) => {
-    await fetch("/api/mercadopago/process_payment", {
+  const processPayment = (checkout, cardForm) => {
+    fetch(`/api/payment/mercadopago`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,7 +25,11 @@ export const useProcessPayment = () => {
         transaction_amount: Number(cardForm.amount),
         installments: Number(cardForm.installments),
         description: "Description...",
-        user: user,
+        user: {
+          username: user.username,
+          email: user.email,
+          id: user.id
+        },
         payer: {
           email: cardForm.cardholderEmail,
           identification: {
@@ -35,12 +39,15 @@ export const useProcessPayment = () => {
         }
       })
     })
-    .then(response => response.json())
-    .then(() => {
-      dispatch({ type: "CLEAR" })
-      navigate("/success")
-    })
-    .catch(error => console.log(error))
+      .then(async response => {
+        const json = await response.json()
+        if(response.ok){
+          dispatch({ type: "CLEAR" })
+          navigate("/success")
+        }else{
+          console.log(json.error)
+        }
+      })
   }
 
   return { processPayment }

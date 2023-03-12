@@ -11,7 +11,6 @@ export const useMercadoPago = () => {
   })
 
   const initMercadoPagoForm = (checkout) => {
-    console.log(checkout)
     const cardForm = mp.cardForm({
       amount: ""+checkout.total,
       iframe: true,

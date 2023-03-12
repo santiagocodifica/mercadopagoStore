@@ -1,14 +1,18 @@
 const mercadopago = require("mercadopago")
 const { create_order } = require("../controllers/orderController")
+const requireMercadopagoToken = require("./requireMercadopagoToken")
 
-const processPayment = (req, res, next) => {
-  const { body } = req;
-  const { payer } = body;
+const mercadopagoPayment = (req, res, next) => {
+
+  requireMercadopagoToken(req, res, next)
+
+  const body = req.body
+  const payer = req.body.payer
 
   const paymentData = {
     transaction_amount: Number(body.transaction_amount),
     token: body.token,
-    description: body.description,
+    description: body.descriptions,
     installments: Number(body.installments),
     payment_method_id: body.payment_method_id,
     issuer_id: body.issuer_id,
@@ -19,18 +23,18 @@ const processPayment = (req, res, next) => {
         number: payer.identification.number
       }
     }
-  };
+  }
 
   mercadopago.payment.create(paymentData)
-    .then((data) => {
+    .then(data => {
       req.mercadopagoResponse = data
       create_order(req, res)
     })
-    .catch((error) => {
-      console.log(error);
-      const { errorMessage, errorStatus }  = validateError(error);
-      res.status(errorStatus).json({ error_message: errorMessage });
-    });
+    .catch(error => {
+      console.log("error: ", error)
+      res.status(400).json({ error: "Hubo un error al procesar el pago, por favor, intenta nuevamente" })
+    })
+
 }
 
 function validateError(error) {
@@ -48,6 +52,4 @@ function validateError(error) {
   return { errorMessage, errorStatus };
 }
 
-module.exports = {
-  processPayment
-}
+module.exports = mercadopagoPayment

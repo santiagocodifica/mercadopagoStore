@@ -20,7 +20,6 @@ const loginUser = async (req, res) => {
 }
 
 const signupUser = async(req, res) => {
-
   const { username, email, password } = req.body
 
   try{

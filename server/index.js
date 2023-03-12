@@ -1,10 +1,10 @@
 require('dotenv').config()
 const express = require("express")
 const mongoose = require("mongoose")
-const mercadopagoRoutes = require("./routes/mercadopago")
 const userRoutes = require("./routes/user")
 const productRoutes = require("./routes/product")
 const orderRoutes = require("./routes/order")
+const paymentRoutes = require("./routes/payment")
 
 const app = express()
 
@@ -14,10 +14,10 @@ app.use((req, res, next) => {
   next(); // necesitamos next porque cualquier cosa .use es middleware, y necesita el next para seguir con el proximo
 })
 
-app.use("/api/mercadopago", mercadopagoRoutes)
 app.use("/api/product", productRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/order", orderRoutes)
+app.use("/api/payment", paymentRoutes)
 
 // database connection
 mongoose.connect(`${process.env.MONGO_URI}`)

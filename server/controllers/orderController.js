@@ -32,54 +32,116 @@ const get_orders_by_status= (req, res) => {
     })
 } 
 
-const create_order = async (req, res) => {
-  Order.create({
-    order_data: req.mercadopagoResponse,
-    user: req.body.user,
+const _create_order = async (req, res) => {
+
+  const order = await Order.create({
+    mercadopago_data: req.body.type == "mercadopago" ? req.mercadopagoResponse : {},
+    user: {
+      username: req.body.user.username,
+      email: req.body.user.email,
+      id: mongoose.Types.ObjectId(req.body.user.id)
+    },
     products: req.body.products,
     total: req.body.total,
     shipping: req.body.shipping,
-    status: "ordered"
+    status: "ordered",
+    comment: req.body.order || ""
+  })
+  if(!order){ res.status(400).json({ error: "No pudimos procesar tu orden"}) }
+  console.log("order made")
+
+  const user = await User.findById((req.body.user.id))
+  if(!user){ res.status(400).json({ error: "No encontramos un usuario para asignarle esta compra"})}
+  user.orders.push(order._id)
+  user.checkout = {}
+  const save = await user.save()
+  if(!save){ res.status(400).json({ error: "No pudimos agregar tu orden a tu usuario" })}
+  console.log("order pushed into user")
+
+  await Promise.all(order.products.map(async new_product => {
+
+    console.log("new_product: ", new_product)
+
+    const product = await Product.findById(new_product._id)
+
+    if(!product){ res.status(400).json({ error: "No pudimos reducir el stock de los productos comprados" }) }
+
+    const updatedSizes = await Promise.all(product.sizes.map(item => {
+
+      console.log("product size item: ", item)
+      if(item.size == new_product.size){
+        return { _id: mongoose.Types.ObjectId(item._id), size: item.size, stock: Number(item.stock) - Number(new_product.quantity) }
+      }else{
+        return item
+      }
+    }))
+
+    console.log("sizes: ", product.sizes)
+    console.log("updatedSizes: ", updatedSizes)
+
+    product.sizes = updatedSizes
+    await product.save()
+
+    console.log("product after changes:", product)
+  }))
+  console.log("RESPONSE HITS HERE")
+  res.status(200).json(order)
+
+}
+
+const create_order = async (req, res) => {
+
+  Order.create({
+    mercadopago_data: req.body.type == "mercadopago" ? req.mercadopagoResponse : {},
+    user: {
+      username: req.body.user.username,
+      email: req.body.user.email,
+      id: mongoose.Types.ObjectId(req.body.user.id)
+    },
+    products: req.body.products,
+    total: req.body.total,
+    shipping: req.body.shipping,
+    status: "ordered",
+    comment: req.body.order || ""
   })
     .then(order => {
       User.findById(req.user._id)
         .then(async user => {
-          console.log("finds user: ", user)
           user.orders.push(order._id)
           user.checkout = {}
           const save = user.save()
           if(save){
-            await Promise.all(order.products.map(ordered_product => {
-              Product.findById(ordered_product._id)
-                .then(product => {
-                  const updatedSizes = product.sizes.map(item => {
+            await Promise.all(order.products.map(async ordered_product => {
+              await Product.findById(ordered_product._id)
+                .then(async product => {
+                  const updatedSizes = await Promise.all(product.sizes.map(item => {
                     if(item.size === ordered_product.size){
                       return { _id: mongoose.Types.ObjectId(item.id), size: item.size, stock: Number(item.stock) - Number(ordered_product.quantity) }
                     }else{
                       return item
                     }
-                  })
-                  console.log(updatedSizes)
+                  }))
                   product.sizes = updatedSizes 
-                  const save = product.save()
-                  if(!save){ res.status(400).json({ error: "Could not update product stock"})}
+                  product.save()
                 })
             }))
-            .then(() => res.status(200).json(order))
+            res.status(200).json(order)
           }else{
-            res.status(400).json({ error: "There was a problem processing your order, please contact us" })
+            console.log("error")
+            res.status(400).json({ error: "3.There was a problem processing your order, please contact us" })
           }
         })
         .catch(error => {
           console.log(error)
-          res.status(400).json({ error: "There was a problem processing your order, please contact us" })
+          res.status(400).json({ error: "2.There was a problem processing your order, please contact us" })
         })
     })
     .catch(error => {
       console.log(error)
-      res.status(400).json({ error: "There was a problem processing your order, please contact us"})
+      res.status(400).json({ error: "1.There was a problem processing your order, please contact us"})
     })
-} 
+}
+ 
 const update_order_status = async (req, res) => {
   const { orderId, status } = req.body
 
