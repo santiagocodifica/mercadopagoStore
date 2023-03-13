@@ -92,7 +92,7 @@ const _create_order = async (req, res) => {
 
 const create_order = async (req, res, next) => {
 
-  await paymentType(req, res, next)
+  // await paymentType(req, res, next)
 
   Order.create({
     mercadopago_data: req.body.type == "mercadopago" ? req.mercadopagoResponse : {},

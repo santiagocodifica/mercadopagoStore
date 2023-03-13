@@ -1,10 +1,8 @@
 const mercadopago = require("mercadopago")
-const { create_order } = require("../controllers/orderController")
 const requireMercadopagoToken = require("./requireMercadopagoToken")
 
 const mercadopagoPayment = async (req, res, next) => {
 
-  console.log("mercadopagoPayment")
 
   await requireMercadopagoToken(req, res, next)
 
@@ -30,9 +28,8 @@ const mercadopagoPayment = async (req, res, next) => {
 
   await mercadopago.payment.create(paymentData)
     .then(data => {
-      console.log("mercadopago Response")
       req.mercadopagoResponse = data
-      return
+      next()
     })
     .catch(error => {
       console.log("error: ", error)
