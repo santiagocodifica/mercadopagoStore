@@ -4,7 +4,6 @@ const mongoose = require("mongoose")
 const userRoutes = require("./routes/user")
 const productRoutes = require("./routes/product")
 const orderRoutes = require("./routes/order")
-const paymentRoutes = require("./routes/payment")
 
 const app = express()
 
@@ -17,7 +16,6 @@ app.use((req, res, next) => {
 app.use("/api/product", productRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/order", orderRoutes)
-app.use("/api/payment", paymentRoutes)
 
 // database connection
 mongoose.connect(`${process.env.MONGO_URI}`)

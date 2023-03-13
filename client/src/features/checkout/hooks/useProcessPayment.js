@@ -9,7 +9,7 @@ export const useProcessPayment = () => {
   const navigate = useNavigate()
   
   const processPayment = (checkout, cardForm) => {
-    fetch(`/api/payment/mercadopago`, {
+    fetch(`/api/order/mercadopago`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export const useProcessPayment = () => {
           dispatch({ type: "CLEAR" })
           navigate("/success")
         }else{
-          console.log(json.error)
+          navigate("/checkoutError", { error: json.error})
         }
       })
   }

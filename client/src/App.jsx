@@ -11,7 +11,7 @@ import { useAuthContext } from './features/auth'
 import Product from './pages/Product'
 import { CartModal } from './features/cart'
 import Admin from './Admin'
-import Success from './pages/Success'
+import { Success, CheckoutError } from './features/checkout'
 
 function App() {
 
@@ -28,7 +28,8 @@ function App() {
           <Route path="login" element={<Login /> } />
           <Route path="pre-checkout" element={ user ? <PrepareOrder /> : <Login /> } />
           <Route path="user" element={ user ? <User /> : <Login /> } />
-          <Route path="success" element={ user? <Success /> : <Login /> } />
+          <Route path="success" element={ user ? <Success /> : <Login /> } />
+          <Route path="checkoutError" element={ user ? <CheckoutError /> : <Login /> } />
         </Route>
         <Route path="admin/*" element={<Admin />} />
       </Routes>

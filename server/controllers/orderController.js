@@ -2,6 +2,7 @@ const mongoose = require("mongoose")
 const Order = require("../models/orderModel")
 const User = require("../models/userModel")
 const Product = require("../models/productModel")
+const paymentType = require("../middleware/paymentType")
 
 const get_orders = (_req, res) => {
   Order.find({}).sort({ createdAt: -1 })
@@ -89,7 +90,9 @@ const _create_order = async (req, res) => {
 
 }
 
-const create_order = async (req, res) => {
+const create_order = async (req, res, next) => {
+
+  await paymentType(req, res, next)
 
   Order.create({
     mercadopago_data: req.body.type == "mercadopago" ? req.mercadopagoResponse : {},
