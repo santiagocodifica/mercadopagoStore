@@ -8,7 +8,8 @@ export const useProcessPayment = () => {
   const { dispatch } = useCartContext()
   const navigate = useNavigate()
   
-  const processPayment = (checkout, cardForm) => {
+  const processPayment = (checkout, cardForm, setIsProcessingPayment) => {
+    setIsProcessingPayment(true)
     fetch(`/api/order/mercadopago`, {
       method: "POST",
       headers: {
@@ -41,6 +42,7 @@ export const useProcessPayment = () => {
     })
       .then(async response => {
         const json = await response.json()
+        setIsProcessingPayment(false)
         if(response.ok){
           dispatch({ type: "CLEAR" })
           navigate("/success")

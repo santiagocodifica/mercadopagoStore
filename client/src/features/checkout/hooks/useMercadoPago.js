@@ -1,9 +1,12 @@
 import { loadMercadoPago } from "@mercadopago/sdk-js"
+import { useState } from "react"
 import { useProcessPayment } from "./useProcessPayment"
 
 export const useMercadoPago = () => {
 
   const { processPayment } = useProcessPayment()
+  const [ isFormLoading, setIsFormLoading ] = useState(true)
+  const [ isProcessingPayment, setIsProcessingPayment ] = useState(false)
   
   loadMercadoPago()
   const mp = new window.MercadoPago(import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY_TEST, {
@@ -29,16 +32,16 @@ export const useMercadoPago = () => {
       callbacks: {
         onFormMounted: error => {
           if(error){ return console.warn("Form Mounted handling error: ", error)}
-          console.log("Form mounted")
         },
         onSubmit: event => {
           event.preventDefault()
           const form = cardForm.getCardFormData()
           form.description = ""
-          processPayment(checkout, form)
+          processPayment(checkout, form, setIsProcessingPayment)
         },
         onFetching: (resource) => {
-          // colocar loading en pantalla
+          setIsFormLoading(true)
+          return () => setIsFormLoading(false)
         },
         onValidityCheck: (error, event) => {
           console.log(error, event)
@@ -50,6 +53,6 @@ export const useMercadoPago = () => {
     })
   }
 
-  return { initMercadoPagoForm }
+  return { initMercadoPagoForm, isFormLoading, isProcessingPayment }
   
 }

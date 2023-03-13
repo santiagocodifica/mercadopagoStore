@@ -7,19 +7,21 @@ export const useGetCheckout = () => {
   const { user } = useAuthContext()
   
   useEffect(() => {
-    const getCheckout = async () => {
-      await fetch("/api/user/get_payment_data", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${user.token}`
-        }
-      })
-      .then(response => response.json())
-      .then(json => setCheckout(json))
-      .catch(error => console.log(error))
-    } 
-    getCheckout()
-  },[])
+    if(user){
+      const getCheckout = async () => {
+        await fetch("/api/user/get_payment_data", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${user.token}`
+          }
+        })
+        .then(response => response.json())
+        .then(json => setCheckout(json))
+        .catch(error => console.log(error))
+      } 
+      getCheckout()
+    }
+  },[ user ])
 
   return { checkout }
 }

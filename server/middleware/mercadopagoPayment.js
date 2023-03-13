@@ -3,7 +3,6 @@ const requireMercadopagoToken = require("./requireMercadopagoToken")
 
 const mercadopagoPayment = async (req, res, next) => {
 
-
   await requireMercadopagoToken(req, res, next)
 
   const body = req.body

@@ -7,7 +7,7 @@ import { useAuthContext } from "@/features/auth"
 const CheckoutForm = () => {
 
   const { checkout } = useGetCheckout()
-  const { initMercadoPagoForm } = useMercadoPago()
+  const { initMercadoPagoForm, isFormLoading, isProcessingPayment } = useMercadoPago()
   const { user } = useAuthContext()
 
   useEffect(() => {
@@ -15,7 +15,17 @@ const CheckoutForm = () => {
   },[checkout])
   
   return( checkout &&
-    <form id="form-checkout" className="flex flex-col w-1/2 p-4 mb-10 mt-10 bg-white rounded-xl overflow-scroll">
+    <form id="form-checkout" className="relative flex flex-col w-1/2 p-4 mb-10 mt-10 bg-white rounded-xl overflow-scroll">
+      { isFormLoading && 
+        <div className="flex place-content-center place-items-center text-white absolute w-full h-full top-0 left-0 z-10 bg-black opacity-50">
+          Cargando...
+        </div>
+      }
+      { isProcessingPayment && 
+        <div className="flex place-content-center place-items-center text-white absolute w-full h-full top-0 left-0 z-10 bg-black opacity-50">
+          Procesando pago...
+        </div>
+      }
       <div className="text-4xl font-semibold mb-10 flex">
         <h2 className="grow">Checkout</h2>
         <h3>${ checkout.total }</h3>

@@ -4,20 +4,29 @@ const checkStock = async (req, res, next) => {
 
   const products = req.body.products
 
-  await Promise.all(products.map(product => {
-    Product.findById(product._id)
-      .then(db_product => {
-        db_product.sizes.map(size_item => {
-          if(size_item.size === product.size && product.quantity >= size_item.stock){
-            return res.status(400).json({ error: `Lo sentimos, no tenemos stock disponible del producto: ${ product.name } en este talle`})
-          }else{ return }
-        })
-      })
-      .catch(error => {
-        console.log(error)
-        res.status(400).json({ error: "Ha ocurrido un error al procesar tu pedido, intenta nuevamente"})
-      })
-  }))
-  next()
+  try{
+    await Promise.all(products.map(async product => {
+      const db_product = await Product.findById(product._id).select("sizes")
+
+      if(!db_product){ throw "No se pudo encontrar el producto deseado en el catálogo" }
+
+      const db_product_current_size = await Promise.all(db_product.sizes.fint(size_item => {
+        size_item.size === product.size
+      }))
+
+      if(!db_product_current_size){
+        throw "No se pudo encontrar el talle seleccionado"
+      }
+
+      if(db_product_current_size.stock <= product.quantity){
+        throw "No hay stock del producto seleccionado en este talle"
+      }
+    }))
+    next()
+  }catch(error){
+    console.log(error)
+    res.status(400).json({ error: "Ocurrió un error al procesar el pago, intenta nuevamente"})
+  }
+
 }
 module.exports = checkStock
